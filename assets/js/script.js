@@ -51,6 +51,41 @@ var loadTasks = function() {
 
 };
 
+//verify if time block has passed, is current, or is in the future
+var auditTask = function(taskEl) {
+  //get time of block
+  var hour = $(taskEl).parent("article").attr("time");
+
+  //convert to moment object 
+  var time =moment().set("hour",hour)
+
+  //remove past present future classes from description
+  $(taskEl).removeClass("past present future");
+
+
+  //apply new class if task is past, current, or future
+  if(moment().isBefore(time,"hour")) {
+    $(taskEl).addClass("future");
+  }
+  else if (moment().isAfter(time,"hour")) {
+    $(taskEl).addClass("past");
+  }
+  else {
+    $(taskEl).addClass("present");
+  }
+}
+
+var runAudit = function() {
+  $(".description").each(function(index,el) {
+    auditTask(el);
+  });
+}
+
+
+//check hour every 30 mins
+
+setInterval(runAudit, (1000 * 60) * 30);
+
 
 //save button is clicked
 $(".saveBtn").on("click", function() {
@@ -66,8 +101,22 @@ $(".saveBtn").on("click", function() {
     content: text,
   };
 
-  taskArray.push(taskObj);
+  //check if there is an object in the array with the same ID
+  var index = taskArray.findIndex(task => task.id === taskId);
+  
+  if (index < 0) {
+    taskArray.push(taskObj);
   saveTasks();
+  }
+  else {
+    taskArray.splice(index,1)
+    taskArray.push(taskObj);
+    saveTasks();
+  }
+
+
 })
 
+
 loadTasks();
+runAudit();
