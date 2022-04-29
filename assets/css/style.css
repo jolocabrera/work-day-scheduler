@@ -69,7 +69,7 @@ textarea{
 }
 
 
-.saveBtn i:hover {
-  font-size: 20px;
+.saveBtn:hover {
+  color: black;
   transition: all .3s ease-in-out;
 }
